@@ -219,7 +219,7 @@ require('lazy').setup({
 -- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
 
--- Expland tabs to 4 spaces by default
+-- Expland tabs to 4 spaces by default ftplugin folder has per-language settings for this
 vim.o.expandtab = true
 vim.o.shiftwidth = 4
 vim.o.tabstop = 4
