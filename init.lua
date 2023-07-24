@@ -279,6 +279,9 @@ vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
+-- Keymaps for Neo-Tree
+vim.keymap.set('n', '<leader>n', ":Neotree toggle<CR>", { silent = true, desc = "Toggle Neotree" })
+
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
@@ -446,6 +449,20 @@ end
 --
 --  Add any additional override configuration in the following tables. They will be passed to
 --  the `settings` field of the server config. You must look up that documentation yourself.
+local configs = require('lspconfig.configs')
+local util = require('lspconfig.util')
+if not configs.helm_ls then
+  configs.helm_ls = {
+    default_config = {
+      cmd = {"helm_ls", "serve"},
+      filetypes = {"helm"},
+      root_dir = function(fname)
+        return util.root_pattern('Chart.yaml')(fname)
+      end,
+    },
+  }
+end
+
 local servers = {
   -- clangd = {},
   -- gopls = {},
@@ -459,6 +476,13 @@ local servers = {
       telemetry = { enable = false },
     },
   },
+
+  helm_ls = {
+    filetypes = {"helm", "yaml"},
+    cmd = {"helm_ls", "serve"},
+  },
+
+  gopls = {},
 }
 
 -- Setup neovim lua configuration
