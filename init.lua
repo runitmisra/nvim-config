@@ -7,33 +7,42 @@ vim.g.mapleader = " "
 --]]
 vim.cmd [[packadd packer.nvim]]
 require('packer').startup(function(use)
-  -- Packer can manage itself
+  -- Packer
+  -- Plugin manager managing itself managing plugins
   use 'wbthomason/packer.nvim'
 
   -- Gruvbox Colorscheme
+  -- Making Neovim less ugly
   use "ellisonleao/gruvbox.nvim"
   vim.cmd [[colorscheme gruvbox]]
 
+  -- Treesitter
+  -- Proper syntax highlighting. Monkey brain like color text
   use {
     'nvim-treesitter/nvim-treesitter',
     run = ':TSUpdate'
   }
 
   -- Lualine
+  -- Look at the pretty statusline! with useful features too
   use {
     'nvim-lualine/lualine.nvim',
     requires = { 'nvim-tree/nvim-web-devicons', opt = true }
   }
+
   -- Telescope
+  -- Godlike fuzzy finder with tons of builtin features
   use {
     'nvim-telescope/telescope.nvim', branch = '0.1.x',
     requires = { {'nvim-lua/plenary.nvim'} }
   }
 
   -- Autopairs
+  -- Add closing brackets and quotes automatically so that I don't get carpel tunnel
   use "windwp/nvim-autopairs"
 
   -- LSP Zero
+  -- An all-in-one LSP setup plugin because I am lazy (I know I don't use lazy plugin manager. Shut up)
   use {
     'VonHeikemen/lsp-zero.nvim',
     branch = 'v2.x',
@@ -55,8 +64,26 @@ require('packer').startup(function(use)
     }
   }
 
-  -- Neodev for Neovim lua config LSP
+  -- Neodev
+  -- LSP for Neovim's lua API making editing init.lua bareable
   use 'folke/neodev.nvim'
+
+  -- Which Key
+  -- Helpful popup at the bottom showing what the keymaps do because I forget
+  use {
+    "folke/which-key.nvim",
+    config = function()
+      vim.o.timeout = true
+      vim.o.timeoutlen = 300
+      require("which-key").setup {}
+    end
+  }
+
+  -- Gitsigns
+  -- Shows me which lines were changed in git. Again, because I forget. Also hunk actions!
+  use { "lewis6991/gitsigns.nvim" }
+
+
 
 end)
 
@@ -171,21 +198,33 @@ require('lspconfig').lua_ls.setup(lsp.nvim_lua_ls())
 require('lspconfig').pyright.setup({})
 lsp.setup()
 
+
+-- Configure gitsigns
+require('gitsigns').setup()
+
 --[[
 ========== Configure Keymaps ========== 
 --]]
 
+local wk = require("which-key")
+
 -- Keymaps for Telescope
 local builtin = require('telescope.builtin')
 
-vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
-vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
-vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
-vim.keymap.set('n', '<leader>fr', builtin.lsp_references, {})
+wk.register({
+  f = {
+    name = "+[F]ind",
+    f = { builtin.find_files, "Find Files" },
+    g = { builtin.live_grep, "Find(grep) in current buffer" },
+    b = { builtin.buffers, "Find open buffers" },
+    r = { builtin.lsp_references, "Find references" },
+  },
+}, { prefix = "<leader>" })
 
 -- Navigation
 
 -- Remap for dealing with word wrap
+-- No need to register this with which-key
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
